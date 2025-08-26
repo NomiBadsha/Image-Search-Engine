@@ -9,9 +9,15 @@ const imagePopup = document.getElementById("image-popup");
 const popupImg = document.getElementById("popup-img");
 const popupDownload = document.getElementById("popup-download");
 
-let keyword = "";
+let keyword = localStorage.getItem("keyword") || "Fashion"; // Default keyword if none stored
 let page = 1;
 let typingTimer;
+
+// Set the search box value to the active keyword
+searchBox.value = keyword;
+
+// Trigger the search on page load
+searchImage();
 
 async function searchImage() {
     if (!keyword) return;
@@ -98,9 +104,6 @@ async function fetchRelatedImages(keyword) {
     };
 }
 
-
-
-
 // Close popup when clicking outside the image
 imagePopup.addEventListener("click", (e) => {
     if (e.target === imagePopup) {
@@ -112,6 +115,7 @@ searchForm.addEventListener("submit", (e) => {
     e.preventDefault();
     keyword = searchBox.value.trim();
     page = 1;
+    localStorage.setItem("keyword", keyword); // Save the keyword in localStorage
     searchImage();
 });
 
@@ -120,6 +124,7 @@ searchBox.addEventListener("input", () => {
     typingTimer = setTimeout(() => {
         keyword = searchBox.value.trim();
         page = 1;
+        localStorage.setItem("keyword", keyword); // Save the keyword in localStorage
         searchImage();
     }, 500);
 });
@@ -137,20 +142,14 @@ document.querySelectorAll(".tag-btn").forEach((btn) => {
 
         keyword = btn.getAttribute("data-tag");
         searchBox.value = keyword; // update search box
+        localStorage.setItem("keyword", keyword); // Save the keyword in localStorage
         page = 1;
         searchImage();
     });
 });
 
 
-
-
-
-
-
-
-
-
+// Theme functionality
 const themeIcon = document.getElementById("theme-icon");
 const themeOptions = document.getElementById("theme-options");
 
@@ -167,15 +166,4 @@ document.querySelectorAll(".theme-btn").forEach(btn => {
     document.body.classList.add(`${theme}-theme`);
     themeOptions.classList.remove("active"); // close after select
   });
-});
-img.addEventListener("click", async () => {
-    // Preload the full image to avoid delays in displaying it
-    const fullImage = new Image();
-    fullImage.src = result.urls.full;
-
-    fullImage.onload = () => {
-        // Once the full image is loaded, update the popup with the new image
-        popupImg.src = fullImage.src;  // Update the popup image source
-        setDownload(fullImage.src);    // Update the download link
-    };
 });
